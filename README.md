@@ -1,89 +1,114 @@
-# ETL PROJECT 
-_______________________________________________________________
-## OVERVIEW
-- This is a simple ETL project. Firstly I scrapped a liquor store website to extract data about its various category of wines then converted it to a csv file. Using the faker nd names library from python, I created different customer names, employee names, city, country etc. 
-- Using the data generated I created a local postgres database to store the data using pgcli in a star schema format to hold the data. After loading the data into postgres, I used dbt to transform the data into the solve  I wanted to solve with data, using postgres connection from dbt and visual studio code as the IDE for the transformation. 
-- With the transformed data data, I created a connection with from Power BI with Postgres as my Data Source to extract only transformed table for data analysis and visualization.
+# <u>Data Engineer nanodegree / Udacity project : data modelling with postgres</u>
+## Table of Contents
+1. [Project info](#project-info)
+2. [Repository files info](#repository-files-info)
+3. [Prerequisite to scripts run](#pre-requisite)
+4. [Database modelling](#database-modelling)
+5. [How to run the scripts](#how-to-run-the-scripts)
 
-## USAGE
- - Python:
-    Python was used to for webscraping the data and creating the fake data from faker and names
-    ##### Libraries
-    - Pandas
-    - Beautiful Soup
-    - Faker
-    - pandasql
-    - Names
- - Postgres:
-    Used PostgreSQL as the Database for the data
- - Power Bi
- - dbt 
-    Used dbt as a transformation tool for the data and to determine some data quality
-    - dbt init
-    - dbt source freshness
-    - dbt run
-    - dbt debug
-    - dbt test
-    - dbt docs generate
-___________________________________________________________________
-___________________________________________________________________
+***
 
-## PROCESS
+### Project info
 
- - EXTRACT
-    - The Whiskey Exchange The [whiskey exchange](https://www.thewhiskyexchange.com/) is online retail store that specializes in the sales of whiskey drink. For this project, we will be scrapping different whiskey name, price, alcohol amount, alcohol percent as well as category of the whiskey. 
-    Using the faker and names libraries I will create a fake customer name, employee name, country, city, email, CARD ISSUER and saving the result into different dataframe
-     - customer_df
-     - countries_df
-     - departments_df
-     - employees_df
-     - payments_df
-     - products_df
-    This is all carried in a jupyter notebok file here
-_________________________________________________________________________________________________________________________________________________________________________
- - LOAD
-    - The dataframe are converted into different csv files in the same folder> Using Postgres PSQL COMMAND LINE PROMPT, I created the different tables to a `whiskey_exchange` database according the name of the of the exported csv file. Added foreign and Unique keys to the tables and formed a star schema. With this the Database is Loaded into my local psotgres. 
-       Here is ERD representation of the database
-       ![schema](https://github.com/jbassie/ETL-PROJECT/blob/main/_images/schema.png) 
-
-________________________________________________________________________________________________________________________________________________________________________
-
-  - TRANSFORM
-    - Using the termnal prompt from VS CODE I initialze dbt into my project folder and created a connection profile into my local database as follows :
-    > Postgres2:<br/>
-        - target: dev <br/>
-        - outputs:<br/>
-           * dev:<br/>
-            - type: postgres<br/>
-            - host: localhost<br/>
-            - user: postgres<br/>
-            - password: '############'<br/>
-            - port: 5432<br/>
-            - dbname: whiskey_exchange<br/>
-            - schema: public<br/>
-            - threads: 10<br/>
-           -  keepalives_idle: 0 # default 0, indicating the system default. See below<br/>
-            - connect_timeout: 10 # default 10 seconds "<br/>
-
-        The transformation process is represented in the lineage graph below:
-    > Lineage_graph
-    ![Graph](https://github.com/jbassie/ETL-PROJECT/blob/main/_images/linear_graph.png)
-
-    - VISUALIZATION
-    After the transforamtion step, the data is now ready for analysis. For the analysis,I represented the data in a simple Microsoft Power BI Dashboard to schowcase findings from the data. To achieve this I created a connection with Postgresql from Power BI and pulled the processed data.
-    > Power BI Connection
-    ![PostgresCOnnection](https://github.com/jbassie/ETL-PROJECT/blob/main/_images/posgresconne.png)
-
-    After creating the connection I represented the data in a visual
-      ![Visual](https://github.com/jbassie/ETL-PROJECT/blob/main/_images/Visual.png) 
-   
-      - Some Insights some the Visual
-        - 2015 was had the best sales of $710,893<br/>
-        - Scotch Whiskey was the most Sold Whiskey Type<br/>
-        - JCB 16 Digit was the most Card type used for Purchase<br/>
+Sparkify, a startup, wants its analytics team to analyse the data collected on songs and user activity from its music streaming app. 
+The purpose of this project is implement a pipeline in python in order to extract, transform and load the information from JSON files into a postgre database and implement some analytics.
+The JSON files consist of :
+* log files containing information about the streaming activity of users,
+* song files containing meta data of the songs.
 
 
+***
+### Repository files info
 
+* `data/` folder contains the JSON files 
+* `sql_queries.py` contains the sql statements to drop , create tables, insert data from the JSON files.
+* `create_tables.py` is the script that drops and creates the database `sparkifydb`, connects to it, run the sql statements in `sql_queries.py` to drop and create the tables. 
+* `etl.py` is the script that loads the JSON files into tables.
+* `etl.ipynb` is the notebook that is used to implement all the steps run by the script `etl.py`.
+* `test.ipynb` is the notebook used to check that all the data are correctly integrated into the database.
+* `controls_and_analytics.ipynb` is the notebook running a few analytics queries on the database.
+
+
+***
+### Prerequisite to scripts run
+
+* Create a [postgre database](https://www.postgresqltutorial.com/install-postgresql/)
+* open Postgres `psql` terminal and run the sql statements included in  `initialization_of_studentdb_and_student_user.sql` in order to initialize studentdb database and student user.
+
+***
+## Database modelling
+
+The database ERD is included in the repository.
+The database model consists of :
+* one fact table : `songplay`,
+* dimension tables : `users`, `songs`, `artists` , `time`. 
+
+The data model is a simple star schema.
+
+Mapping rules from JSON files to the tables:
+
+* __songplay__:
+
+| column | source file.field  |
+|:--------------|:-------------|
+| start_time | *log_file.ts* |
+| user_id | *log_file.userid* |
+| level | *log_file.level* |
+| song_id | *song_file.songid*|
+| artist_id | *song_file.artist_id*|
+| session_id | *log_file.sessionId*|
+| location | *log_file.location*|
+| user_agent | *log_file.userAgent*|
+
+* __users__:
+
+| column | source file.field  |
+|:--------------|:-------------|
+| user_id | *log_file.userid* |
+| first_name | *log_file.firstName* |
+| last_name | *log_file.lastName* |
+| gender | *log_file.gender*|
+| level | *log_file.level*|
+
+* __songs__:
+
+| column | source file.field  |
+|:--------------|:-------------|
+| song_id | *song_file.songid* |
+| title | *song_file.title* |
+| artist_id | *song_file.artist_id* |
+| year | *song_file.year*|
+| duration | *song_file.duration*|
+
+* __artists__:
+
+| column | source file.field  |
+|:--------------|:-------------|
+| artist_id | *song_file.artist_id* |
+| name | *song_file.artist_name* |
+| location | *song_file.artist_location* |
+| latitude | *song_file.artist_latitude*|
+| longitude | *song_file.artist_longitude*|
+
+* __time__:
+
+| column | source file.field  |
+|:--------------|:-------------|
+| start_time | *log_file.ts* |
+
+**<u>Important</u>** : `song_id` and and `artist_id` columns in `songplay` table are derived from the `song_file` JSON file via the query `song_select` in `sql_queries.py`.
+***
+
+## How to run the scripts
+
+
+Once the postgre `studentdb` database and `student` user are created, run the scripts in the following order :
+> 1. run `create_tables.py` in the terminal in order to create the database `sparkifydb` if it does not exists, and drop/create the tables. This script is run once.
+> 2. run `etl.py` in the terminal in order to load JSON files and insert data into tables.
+> 3. run the jupyter notebook `test.ipynb` in order to control the correct data insertion. 
+> 4. run `controls_and_analytics.ipynb` to get some analytics on the database.
+
+**<u>Important</u>** : Each time the notebooks `test.ipynb` or `etl.ipynb`are run, remember to restart/shutdown them to close the connection to your database. Otherwise, you won't be able to run your code in create_tables.py, etl.py, since you can't make multiple connections to the same database.
 
 
 
