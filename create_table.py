@@ -1,5 +1,6 @@
+from pickle import TRUE
 import psycopg2
-
+from sql_queries import create_table_queries,drop_table_queries
 
 def create_database():
     """
@@ -8,11 +9,13 @@ def create_database():
     """
     #connect to default database
     conn = psycopg2.connect("host = localhost user = postgres password = 9507024922 dbname = udacity")
+    conn.set_session(autocommit= TRUE)
     cur = conn.cursor()
 
 
+
     #Create sparkify database with UTF8 encoding
-    cur.execute("DROP DATABASE IF NOT EXISTS sparkifydb")
+    cur.execute("DROP DATABASE IF EXISTS sparkifydb")
     cur.execute("CREATE DATABASE sparkifydb WITH encoding 'utf8' TEMPLATE \
         template0")
     
@@ -30,12 +33,18 @@ def drop_tables(cur, conn):
     Drops each table using the queries in `drop_table_queries` list
 
     """
+    for query in drop_table_queries:
+        cur.execute(query)
+        conn.commit()
 
 
 def create_tables(cur, conn):
     """
     Creates each table using the queries in `create_table_queries` list
     """
+    for query in create_table_queries:
+        cur.execute(query)
+        conn.commit()
 
 
 def main():
