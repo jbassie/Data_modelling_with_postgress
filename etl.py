@@ -8,7 +8,7 @@ import numpy as np
 from pyparsing import line
 from sql_queries import *
 from datetime import datetime
-pd.options.dispaly.float_format = '{:.0f}'.format
+pd.options.display.float_format = '{:.0f}'.format
 
 
 def process_song_fie(cur, filepath):
@@ -30,7 +30,7 @@ def process_song_fie(cur, filepath):
 
     #transform the song_df to the needed table ie (song_table)
     song_data = song_df[['song_id', 'title', 'artist_id', 'year', 'duration']]
-    song_data.values.tolist()
+    song_data = song_data.values.tolist()
     
     #insert data into the songs tables
     try:
@@ -42,8 +42,8 @@ def process_song_fie(cur, filepath):
         print(e)
 
     #transform the song_df to the needed table ie (artist_table)
-    artist_data = song_df[['artist_id', 'artist_name', 'artist_location', 'artists_latitude', 'artist_longitude']]
-    artist_data.values.tolist()
+    artist_data = song_df[['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']]
+    artist_data = artist_data.values.tolist()
 
       #insert data into the artist tables
     try:
@@ -94,9 +94,9 @@ def process_log_file(cur, filepath):
     ts_df['year'] = ts_df['datetime'].dt.month
     ts_df['weekday'] = ts_df['datetime'].dt.weekday
 
-    ts_df = ts_df[['timestap', 'hour', 'day', 'week', 'month', 'year', 'weekday']]
+    ts_df = ts_df[['timestamp', 'hour', 'day', 'week', 'month', 'year', 'weekday']]
     
-    time_data = ts_df[['timestap', 'hour','day', 'week', 'month', 'year', 'weekday']]
+    time_data = ts_df[['timestamp', 'hour','day', 'week', 'month', 'year', 'weekday']]
     time_data = np.array(time_data)
     time_data = time_data.transpose()
     time_data = time_data.astype('int64')
@@ -105,7 +105,7 @@ def process_log_file(cur, filepath):
     time_df = pd.DataFrame(dict(zip(column_labels, time_data)))
 
     try:
-        for i, row in time_df.itterrows():
+        for i, row in time_df.iterrows():
             cur.execute(time_table_insert, list(row))
     except psycopg2.Error as e:
         print("Error: Could not insert data to time table ")
@@ -126,9 +126,9 @@ def process_log_file(cur, filepath):
     songplay_df = log_data_df[['ts', 'userId', 'level', 'sessionId','location', 'userAgent','song', 'artist', 'length']]
 
     try:
-        for index, row in songplay_df.itterrows():
+        for index, row in songplay_df.iterrows():
             cur.execute(song_select, (row.song, row.artist, row.length))
-            results = cur.fecthone()
+            results = cur.fetchone()
 
         if results:
             songid, artistid = results
@@ -136,7 +136,7 @@ def process_log_file(cur, filepath):
             songid, artistid = None, None
         
         #insert songplay record
-        songplay_data = [row.ts, row.userId, row.level, songid, artistid, row.sessionid, row.location, row.userAgent]
+        songplay_data = [row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent]
         cur.execute(songplay_table_insert, songplay_data)
     except psycopg2.Error as e:
         print("Error: Could not insert data into the songplay tavle")
@@ -163,7 +163,7 @@ def process_data(cur, conn,filepath, func):
     for root, dirs, files in os.walk(filepath):
         files = glob.glob(os.path.join(root, "*json"))
         for f in files:
-            all_files.appenf(os.path.abspath(f))
+            all_files.append(os.path.abspath(f))
     
     #get the number of files found
     num_files = len(all_files)
