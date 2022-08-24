@@ -32,7 +32,7 @@ The JSON files consist of :
 ***
 ### Prerequisite to scripts run
 
-* Create a [postgre database](https://www.postgresqltutorial.com/install-postgresql/)
+* Create a [postgres database](https://www.postgresqltutorial.com/install-postgresql/)
 * open Postgres `psql` terminal and run the sql statements included in  `initialization_of_studentdb_and_student_user.sql` in order to initialize studentdb database and student user.
 
 ***
