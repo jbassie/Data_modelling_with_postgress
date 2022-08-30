@@ -1,4 +1,4 @@
-# <u>Data Engineer nanodegree / Udacity project : data modelling with postgres</u>
+# <u>Data Engineer nanodegree : Data Modelling with Postgres</u>
 ## Table of Contents
 1. [Project info](#project-info)
 2. [Repository files info](#repository-files-info)
