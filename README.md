@@ -102,7 +102,7 @@ Mapping rules from JSON files to the tables:
 ## How to run the scripts
 
 
-Once the postgre `studentdb` database and `student` user are created, run the scripts in the following order :
+Once the postgres `studentdb` database and `student` user are created, run the scripts in the following order :
 > 1. run `create_tables.py` in the terminal in order to create the database `sparkifydb` if it does not exists, and drop/create the tables. This script is run once.
 > 2. run `etl.py` in the terminal in order to load JSON files and insert data into tables.
 > 3. run the jupyter notebook `test.ipynb` in order to control the correct data insertion. 
