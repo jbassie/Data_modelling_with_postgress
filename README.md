@@ -108,7 +108,7 @@ Once the postgres `studentdb` database and `student` user are created, run the s
 > 3. run the jupyter notebook `test.ipynb` in order to control the correct data insertion. 
 > 4. run `controls_and_analytics.ipynb` to get some analytics on the database.
 
-**<u>Important</u>** : Each time the notebooks `test.ipynb` or `etl.ipynb`are run, remember to restart/shutdown them to close the connection to your database. Otherwise, you won't be able to run your code in create_tables.py, etl.py, since you can't make multiple connections to the same database.
+**<u>Important</u>** : Each time the notebooks `test.ipynb` or `etl.ipynb`are run, remember to restart/shutdown them in order to close the connection to your database. Otherwise, you won't be able to run your code in create_tables.py, etl.py, since you can't make multiple connections to the same database.
 
 
 
